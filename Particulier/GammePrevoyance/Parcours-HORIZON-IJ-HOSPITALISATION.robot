@@ -1,17 +1,17 @@
 *** Settings ***
 Library     QWeb
+# Library  FakerLibrary
 Resource    ConnectionData.robot
-
 
 *** Variables ***
 ${customerBirthday}     06/12/1995
 ${spouseBirthday}       06/12/1998
 
-
+# ${randomValue}=    FakerLibrary.Random Int    0    500
 *** Test Cases ***
+
 Test de Connexion à la Page
     OpenBrowser    https://luca-dev2.spvie.com/auth/sign-in    chrome
-    ${range_locator}=    Set Variable    css:.input-range
     Type Text    Email    demo-sogeti@spvie.com
     Type Text    Mot de passe    czUG6R3yuWLwLwQq
     Click Text    Connexion
@@ -19,26 +19,28 @@ Test de Connexion à la Page
     Scroll    Gamme Prévoyance
     Verify Text    HORIZON GAV
     Click Text    Faire un devis    9
+    Verify Text    Informations tarifantes
+    # ${elements}=    Get Element    devoir de conseil
     Type Text    Date de naissance de l'assuré    ${customerBirthday}
     Type Text    Date de naissance du conjoint    ${spouseBirthday}
-    Click Element    xpath=//button[@class='ng-star-inserted']
+    Click Item    devoir de conseil    1
     Type Text    Revenu mensuel brut :    250
     Click Text    Valider
-    Scroll    Garanties & Cotisations
-    Click Item    devoir de conseil
-    Click Element
-    ...    xpath=//div/div[1]/div/ng-component/div/form/section[2]/div[2]/div[2]/overlay-devoir-conseil/p-dialog[2]/div/div/div[3]/div/input
+    Verify Text    Garanties & Cotisations
+    Click Item    devoir de conseil    2   
+    # Execute JavaScript    document.querySelector('.input-range').value = ${randomValue}; document.querySelector('.input-range').dispatchEvent(new Event('change'));
+    Execute JavaScript    document.querySelector('.input-range').value = 50; document.querySelector('.input-range').dispatchEvent(new Event('change'));
     Click Text    Valider
-    # Scroll    Nos adhérents ont également choisi...
+    Verify Text    Nos adhérents ont également choisi...
     Click Text    Seul
-    Click Text    Ajouter
-    Scroll     Adhérent / Premier assuré
-    # Verify Text    Retirer
-    # Click Item    devoir de conseil
-    # # Execute JavaScript    document.querySelector('.input-range').value = 25; document.querySelector('.input-range').dispatchEvent(new Event('change'));
-    # Click Text    Valider
-    # SeleniumLibrary.Wait Until Element Is Visible    ${EMAIL_FIELD}
-    # QWeb.TypeText    ${EMAIL_FIELD}    your-email@example.com
-    # SeleniumLibrary.Wait Until Element Is Visible    ${PASSWORD_FIELD}
-    # QWeb.TypeText    ${PASSWORD_FIELD}    your-password
-    # QWeb.Click Element    ${SUBMIT_BUTTON}
+    # Click Element    css:.btn-default:contains('Ajouter')
+    Click Text    Ajouter    1
+    Click Item    devoir de conseil    3
+    Execute JavaScript    document.querySelector('.input-range').value = 40; document.querySelector('.input-range').dispatchEvent(new Event('change'));
+    Click Text    Valider
+    Verify Text    Adhérent / Premier assuré
+    Type Text    Email    functional-tests@assurware.com
+    Type Text    Nom    Lauriat
+    Type Text    Nom de naissance    Herosside
+    Type Text    Prénom    Nom de naissance
+ 
